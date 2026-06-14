@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model RequestLog {
+  id                Int      @id @default(autoincrement())
+  timestamp         DateTime @default(now())
+  executionTime     Int
+  cpuIterationCount Int
+  randomValue       Float
+}
+
+model StressInsert {
+  id        Int      @id @default(autoincrement())
+  batchId   String
+  payload   String
+  value     Float
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id         Int         @id @default(autoincrement())
+  name       String
+  price      Float
+  stock      Int
+  categoryId Int
+  category   Category    @relation(fields: [categoryId], references: [id])
+  orders     OrderItem[]
+  createdAt  DateTime    @default(now())
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  total     Float
+  status    String
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model LockTest {
+  id      Int    @id @default(autoincrement())
+  counter Int    @default(0)
+  token   String @unique
+}
